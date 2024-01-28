@@ -12,18 +12,18 @@ size_t strlen(const char *string) {
     return len;
 }
 
-void write_string(const char *string) {
+void write_string(Screen *screen, const char *string) {
+    unsigned char color_code = get_color(VGA_COLOR_BLACK, VGA_COLOR_WHITE);
+
     for (size_t i = 0; i < strlen(string); i++) {
-        screen_write(VGA_COLOR_WHITE, string[i]);
+        screen_write(screen, color_code, string[i]);
     }
 }
 
 void kmain(void) {
-    screen_init();
+    Screen screen = screen_init((volatile ScreenChar *)VGA_BUFFER_ADDRESS);
 
-    while (true) {
-        screen_clear(VGA_COLOR_BLACK);
+    write_string(&screen, "Hello World");
 
-        write_string("Hello World");
-    }
+    while (true) {}
 }

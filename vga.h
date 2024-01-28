@@ -1,3 +1,5 @@
+#pragma once
+
 enum VGA_COLOR {
 	VGA_COLOR_BLACK = 0,
 	VGA_COLOR_BLUE = 1,
@@ -17,6 +19,6 @@ enum VGA_COLOR {
 	VGA_COLOR_WHITE = 15,
 };
 
-#define VGA_BUFFER_ADDRESS (void *)0xa0000
+#define VGA_BUFFER_ADDRESS 0xb8000
 #define VGA_BUFFER_WIDTH 25
 #define VGA_BUFFER_HEIGHT 80

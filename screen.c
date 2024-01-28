@@ -1,42 +1,50 @@
-#include <stdint.h>
 #include <stddef.h>
 
 #include "screen.h"
 #include "vga.h"
 
-uint16_t *screen_buffer = VGA_BUFFER_ADDRESS;
-size_t screen_current_row;
-size_t screen_current_column;
-
-uint16_t vga_entry(int color, const char c) {
-    return c | color << 8;
+unsigned char get_color(unsigned char background, unsigned char foreground) {
+    return background << 4 | foreground;
 }
 
-void screen_init(void) {
-    screen_clear(VGA_COLOR_BLACK);
+Screen screen_init(volatile ScreenChar *characters) {
+	Screen screen = {.buffer = {
+						 .characters = characters,
+						 .current_column = 0,
+						 .current_row = 0,
+					 }};
+
+	screen_clear(&screen, get_color(VGA_COLOR_BLACK, VGA_COLOR_WHITE));
+
+	return screen;
 };
 
-void screen_clear(int color) {
-    screen_current_column = 0;
-    screen_current_row = 0;
+void screen_clear(Screen *screen, unsigned char color_code) {
+	screen->buffer.current_row = 0;
+	screen->buffer.current_column = 0;
 
-    for (size_t y = 0; y < VGA_BUFFER_HEIGHT; y++) {
-            for (size_t x = 0; x < VGA_BUFFER_WIDTH; x++) {
-                const size_t index = y * VGA_BUFFER_WIDTH + x;
-                screen_buffer[index] = vga_entry(color, ' ');
-            }
-        }
-    };
+	for (size_t row = 0; row < VGA_BUFFER_HEIGHT; row++) {
+		for (size_t column = 0; column < VGA_BUFFER_WIDTH; column++) {
+			size_t index = row * VGA_BUFFER_WIDTH + column;
+			screen->buffer.characters[index] =
+				(ScreenChar){.ascii_character = ' ', .color_code = color_code};
+		}
+	}
+}
 
-void screen_write(int color, char c) {
-    const size_t index = screen_current_row * VGA_BUFFER_WIDTH + screen_current_column;
-    screen_buffer[index] = vga_entry(c, color);
+void screen_write(Screen *screen, unsigned char color_code, unsigned char c) {
+	size_t index = screen->buffer.current_row * VGA_BUFFER_WIDTH +
+				   screen->buffer.current_column;
+	screen->buffer.characters[index] = (ScreenChar){
+		.ascii_character = c,
+		.color_code = color_code,
+	};
 
-    if (++screen_current_column == VGA_BUFFER_WIDTH) {
-        screen_current_column = 0;
+	if (++screen->buffer.current_column == VGA_BUFFER_WIDTH) {
+		screen->buffer.current_column = 0;
 
-        if (++screen_current_row == VGA_BUFFER_HEIGHT) {
-            screen_current_row = 0;
-        }
-    }
-};
+		if (++screen->buffer.current_row == VGA_BUFFER_HEIGHT) {
+			screen->buffer.current_row = 0;
+		}
+	}
+}
