@@ -6,5 +6,5 @@ Note: This is part of a series I have on [Twitch](https://twitch.tv/yhyadev) and
 # Quick Start
 ```console
 $ make
-$ qemu-system-i386 -kernel hello-os.bin
+$ qemu-system-i386 -kernel ./out/hello-os.bin
 ```

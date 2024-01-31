@@ -1,13 +1,21 @@
-all: hello-os.bin
+OUT := out
+SRC := src
 
-hello-os.bin: boot.o kernel.o screen.o
-	ld.lld -T link.ld $? -o $@ -O2
+LINKER_SCRIPT := $(SRC)/link.ld
 
-%.o: %.s
-	clang $? -o $@ -c -target i386-pc-none-elf -nostdlib
+all: $(OUT) $(OUT)/hello-os.bin
 
-%.o: %.c
-	clang $? -o $@ -c -target i386-pc-none-elf -ffreestanding -nostdlib -O2 -Werror -Wall -Wextra
+$(OUT):
+	mkdir $@
 
-clean:
-	rm *.o *.bin
+$(OUT)/hello-os.bin: $(OUT)/boot.o $(OUT)/kernel.o $(OUT)/screen.o
+	ld.lld -T $(LINKER_SCRIPT) $? -o $@ -O2
+
+$(OUT)/%.o: $(SRC)/%.s
+	clang -c $? -o $@ -target i386-pc-none-elf -nostdlib
+
+$(OUT)/%.o: $(SRC)/%.c
+	clang -c $? -o $@ -target i386-pc-none-elf -ffreestanding -nostdlib -O2 -Werror -Wall -Wextra
+
+clean: $(OUT)
+	rm -rf $<
