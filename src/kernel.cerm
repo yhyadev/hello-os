@@ -73,19 +73,18 @@ fn Screen::clear(screen *Screen, color_code u8) {
 }
 
 fn Screen::write(screen *Screen, color_code u8, ascii_character u8) {
-	var index usize = screen.buffer.current_row * vga::buffer::width +
-                      screen.buffer.current_column;
+    var index usize = screen.buffer.current_row * vga::buffer::width + screen.buffer.current_column;
 
-	screen.buffer.characters[index].ascii_character = ascii_character;
+    screen.buffer.characters[index].ascii_character = ascii_character;
     screen.buffer.characters[index].color_code = color_code;
 
-	if (screen.buffer.current_column = screen.buffer.current_column + 1) == vga::buffer::width {
-		screen.buffer.current_column = 0;
+    if (screen.buffer.current_column = screen.buffer.current_column + 1) == vga::buffer::width {
+        screen.buffer.current_column = 0;
 
-		if (screen.buffer.current_row = screen.buffer.current_row + 1) == vga::buffer::height {
-			screen.buffer.current_row = 0;
-		}
-	}
+        if (screen.buffer.current_row = screen.buffer.current_row + 1) == vga::buffer::height {
+            screen.buffer.current_row = 0;
+        }
+    }
 }
 
 fn Screen::write_string(screen *Screen, string [*]const u8) {

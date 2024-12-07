@@ -2,22 +2,22 @@
 #include <stddef.h>
 
 enum VGA_COLOR {
-	VGA_COLOR_BLACK = 0,
-	VGA_COLOR_BLUE = 1,
-	VGA_COLOR_GREEN = 2,
-	VGA_COLOR_CYAN = 3,
-	VGA_COLOR_RED = 4,
-	VGA_COLOR_MAGENTA = 5,
-	VGA_COLOR_BROWN = 6,
-	VGA_COLOR_LIGHT_GREY = 7,
-	VGA_COLOR_DARK_GREY = 8,
-	VGA_COLOR_LIGHT_BLUE = 9,
-	VGA_COLOR_LIGHT_GREEN = 10,
-	VGA_COLOR_LIGHT_CYAN = 11,
-	VGA_COLOR_LIGHT_RED = 12,
-	VGA_COLOR_LIGHT_MAGENTA = 13,
-	VGA_COLOR_LIGHT_BROWN = 14,
-	VGA_COLOR_WHITE = 15,
+    VGA_COLOR_BLACK = 0,
+    VGA_COLOR_BLUE = 1,
+    VGA_COLOR_GREEN = 2,
+    VGA_COLOR_CYAN = 3,
+    VGA_COLOR_RED = 4,
+    VGA_COLOR_MAGENTA = 5,
+    VGA_COLOR_BROWN = 6,
+    VGA_COLOR_LIGHT_GREY = 7,
+    VGA_COLOR_DARK_GREY = 8,
+    VGA_COLOR_LIGHT_BLUE = 9,
+    VGA_COLOR_LIGHT_GREEN = 10,
+    VGA_COLOR_LIGHT_CYAN = 11,
+    VGA_COLOR_LIGHT_RED = 12,
+    VGA_COLOR_LIGHT_MAGENTA = 13,
+    VGA_COLOR_LIGHT_BROWN = 14,
+    VGA_COLOR_WHITE = 15,
 };
 
 #define VGA_BUFFER_ADDRESS 0xb8000
@@ -42,59 +42,61 @@ typedef struct {
 size_t strlen(const char *string) {
     size_t len = 0;
 
-    while (string[len]) len++;
+    while (string[len])
+        len++;
 
     return len;
 }
 
-unsigned char combine_colors(unsigned char background, unsigned char foreground) {
+unsigned char combine_colors(unsigned char background,
+                             unsigned char foreground) {
     return background << 4 | foreground;
 }
 
 void screen_clear(Screen *screen, unsigned char color_code) {
-	screen->buffer.current_row = 0;
-	screen->buffer.current_column = 0;
+    screen->buffer.current_row = 0;
+    screen->buffer.current_column = 0;
 
-	for (size_t row = 0; row < VGA_BUFFER_HEIGHT; row++) {
-		for (size_t column = 0; column < VGA_BUFFER_WIDTH; column++) {
-			size_t index = row * VGA_BUFFER_WIDTH + column;
+    for (size_t row = 0; row < VGA_BUFFER_HEIGHT; row++) {
+        for (size_t column = 0; column < VGA_BUFFER_WIDTH; column++) {
+            size_t index = row * VGA_BUFFER_WIDTH + column;
 
-			screen->buffer.characters[index] =
-				(ScreenChar){.ascii_character = ' ', .color_code = color_code};
-		}
-	}
+            screen->buffer.characters[index] =
+                (ScreenChar){.ascii_character = ' ', .color_code = color_code};
+        }
+    }
 }
 
 Screen screen_init(volatile ScreenChar *characters) {
-	Screen screen = {.buffer = {
-						 .characters = characters,
-						 .current_column = 0,
-						 .current_row = 0,
-					 }};
+    Screen screen = {.buffer = {
+                         .characters = characters,
+                         .current_column = 0,
+                         .current_row = 0,
+                     }};
 
-	screen_clear(&screen, combine_colors(VGA_COLOR_BLACK, VGA_COLOR_WHITE));
+    screen_clear(&screen, combine_colors(VGA_COLOR_BLACK, VGA_COLOR_WHITE));
 
-	return screen;
+    return screen;
 };
 
-void screen_write(Screen *screen, unsigned char color_code, unsigned char ascii_character) {
-	size_t index = screen->buffer.current_row * VGA_BUFFER_WIDTH +
-				   screen->buffer.current_column;
+void screen_write(Screen *screen, unsigned char color_code,
+                  unsigned char ascii_character) {
+    size_t index = screen->buffer.current_row * VGA_BUFFER_WIDTH +
+                   screen->buffer.current_column;
 
-	screen->buffer.characters[index] = (ScreenChar){
-		.ascii_character = ascii_character,
-		.color_code = color_code,
-	};
+    screen->buffer.characters[index] = (ScreenChar){
+        .ascii_character = ascii_character,
+        .color_code = color_code,
+    };
 
-	if (++screen->buffer.current_column == VGA_BUFFER_WIDTH) {
-		screen->buffer.current_column = 0;
+    if (++screen->buffer.current_column == VGA_BUFFER_WIDTH) {
+        screen->buffer.current_column = 0;
 
-		if (++screen->buffer.current_row == VGA_BUFFER_HEIGHT) {
-			screen->buffer.current_row = 0;
-		}
-	}
+        if (++screen->buffer.current_row == VGA_BUFFER_HEIGHT) {
+            screen->buffer.current_row = 0;
+        }
+    }
 }
-
 
 void screen_write_string(Screen *screen, const char *string) {
     unsigned char color_code = combine_colors(VGA_COLOR_BLACK, VGA_COLOR_WHITE);
@@ -109,5 +111,6 @@ void kmain(void) {
 
     screen_write_string(&screen, "Hello, World!");
 
-    while (true) {}
+    while (true) {
+    }
 }
