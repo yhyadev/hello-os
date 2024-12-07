@@ -101,7 +101,7 @@ fn Screen::write_string(screen *Screen, string [*]const u8) {
 }
 
 fn kmain() {
-	var screen Screen;
+    var screen Screen;
 
     screen.buffer.characters = vga::buffer::address as [*]ScreenChar;
     screen.buffer.current_column = 0;
