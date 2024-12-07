@@ -9,7 +9,7 @@ all: $(OUT) $(OUT)/hello-os.bin
 
 .PHONY: run
 run: all
-	qemu-system-i386 -kernel $(OUT)/hello-os.bin -machine type=pc-i440fx-3.1
+	qemu-system-i386 -kernel $(OUT)/hello-os.bin
 
 .PHONY: clean
 clean: $(OUT)
