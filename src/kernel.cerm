@@ -2,7 +2,7 @@ const vga::buffer::address = 0xb8000;
 const vga::buffer::width = 25;
 const vga::buffer::height = 80;
 
-type vga::Color = enum u8 {
+type vga::Color = enum u4 {
     black = 0,
     blue = 1,
     green = 2,
@@ -27,7 +27,7 @@ type Screen = struct {
 
 type Screen::Character = struct {
     ascii_character u8,
-    color_code u8,
+    backfront_color u8,
 };
 
 type Screen::Buffer = struct {
@@ -46,11 +46,7 @@ fn strlen(str [*]const u8) usize {
     return len;
 }
 
-fn combine_colors(background vga::Color, foreground vga::Color) u8 {
-    return (background << 4) | foreground;
-}
-
-fn Screen::clear(screen *Screen, color_code u8) {
+fn Screen::clear(screen *Screen, background vga::Color, foreground vga::Color) {
     screen.buffer.current_row = 0;
     screen.buffer.current_column = 0;
 
@@ -63,7 +59,7 @@ fn Screen::clear(screen *Screen, color_code u8) {
             var index usize = row * vga::buffer::width + column;
 
             screen.buffer.characters[index].ascii_character = ' ';
-            screen.buffer.characters[index].color_code = color_code;
+            screen.buffer.characters[index].backfront_color = (background as u8 << 4) | foreground;
 
             column = column + 1;
         }
@@ -72,11 +68,11 @@ fn Screen::clear(screen *Screen, color_code u8) {
     }
 }
 
-fn Screen::write(screen *Screen, color_code u8, ascii_character u8) {
+fn Screen::write(screen *Screen, ascii_character u8, background vga::Color, foreground vga::Color) {
     var index usize = screen.buffer.current_row * vga::buffer::width + screen.buffer.current_column;
 
     screen.buffer.characters[index].ascii_character = ascii_character;
-    screen.buffer.characters[index].color_code = color_code;
+    screen.buffer.characters[index].backfront_color = (background as u8 << 4) | foreground;
 
     if (screen.buffer.current_column = screen.buffer.current_column + 1) == vga::buffer::width {
         screen.buffer.current_column = 0;
@@ -88,12 +84,10 @@ fn Screen::write(screen *Screen, color_code u8, ascii_character u8) {
 }
 
 fn Screen::write_string(screen *Screen, string [*]const u8) {
-    var color_code = combine_colors(vga::Color::black, vga::Color::white);
-
     var i usize = 0;
 
     while i < strlen(string) {
-        Screen::write(screen, color_code, string[i]);
+        Screen::write(screen, string[i], vga::Color::black, vga::Color::white);
 
         i = i + 1;
     }
@@ -106,7 +100,7 @@ fn kmain() {
     screen.buffer.current_column = 0;
     screen.buffer.current_row = 0;
 
-    Screen::clear(&screen, combine_colors(vga::Color::black, vga::Color::white));
+    Screen::clear(&screen, vga::Color::black,vga::Color::white);
 
     Screen::write_string(&screen, "Hello, World!");
 
