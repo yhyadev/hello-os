@@ -100,7 +100,7 @@ fn kmain() {
     screen.buffer.current_column = 0;
     screen.buffer.current_row = 0;
 
-    Screen::clear(&screen, vga::Color::black,vga::Color::white);
+    Screen::clear(&screen, vga::Color::black, vga::Color::white);
 
     Screen::write_string(&screen, "Hello, World!");
 
