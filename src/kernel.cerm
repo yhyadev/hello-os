@@ -21,19 +21,19 @@ type vga::Color = enum u8 {
     white = 15,
 };
 
-type ScreenChar = struct {
+type Screen = struct {
+    buffer Screen::Buffer,
+};
+
+type Screen::Character = struct {
     ascii_character u8,
     color_code u8,
 };
 
-type ScreenBuffer = struct {
-    characters [*]ScreenChar,
+type Screen::Buffer = struct {
+    characters [*]Screen::Character,
     current_column usize,
     current_row usize,
-};
-
-type Screen = struct {
-    buffer ScreenBuffer,
 };
 
 fn strlen(str [*]const u8) usize {
@@ -102,7 +102,7 @@ fn Screen::write_string(screen *Screen, string [*]const u8) {
 fn kmain() {
     var screen Screen;
 
-    screen.buffer.characters = vga::buffer::address as [*]ScreenChar;
+    screen.buffer.characters = vga::buffer::address as [*]Screen::Character;
     screen.buffer.current_column = 0;
     screen.buffer.current_row = 0;
 
