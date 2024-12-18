@@ -1,108 +1,18 @@
-const vga::buffer::address = 0xb8000;
-const vga::buffer::width = 25;
-const vga::buffer::height = 80;
+module kernel;
 
-type vga::Color = enum u4 {
-    black = 0,
-    blue = 1,
-    green = 2,
-    cyan = 3,
-    red = 4,
-    magenta = 5,
-    brown = 6,
-    light_grey = 7,
-    dark_grey = 8,
-    light_blue = 9,
-    light_green = 10,
-    light_cyan = 11,
-    light_red = 12,
-    light_magenta = 13,
-    light_brown = 14,
-    white = 15,
-};
+import "vga.cerm";
+import "screen.cerm";
 
-type Screen = struct {
-    buffer Screen::Buffer,
-};
+export fn kmain() {
+    var screen screen::Screen;
 
-type Screen::Character = struct {
-    ascii_character u8,
-    backfront_color u8,
-};
-
-type Screen::Buffer = struct {
-    characters [*]Screen::Character,
-    current_column usize,
-    current_row usize,
-};
-
-fn strlen(str [*]const u8) usize {
-    var len usize = 0;
-
-    while str[len] != 0 {
-        len = len + 1;
-    }
-
-    return len;
-}
-
-fn Screen::clear(screen *Screen, background vga::Color, foreground vga::Color) {
-    screen.buffer.current_row = 0;
-    screen.buffer.current_column = 0;
-
-    var row usize = 0;
-
-    while row < vga::buffer::height {
-        var column usize = 0;
-
-        while column < vga::buffer::width {
-            var index usize = row * vga::buffer::width + column;
-
-            screen.buffer.characters[index].ascii_character = ' ';
-            screen.buffer.characters[index].backfront_color = (background as u8 << 4) | foreground;
-
-            column = column + 1;
-        }
-
-        row = row + 1;
-    }
-}
-
-fn Screen::write(screen *Screen, ascii_character u8, background vga::Color, foreground vga::Color) {
-    var index usize = screen.buffer.current_row * vga::buffer::width + screen.buffer.current_column;
-
-    screen.buffer.characters[index].ascii_character = ascii_character;
-    screen.buffer.characters[index].backfront_color = (background as u8 << 4) | foreground;
-
-    if (screen.buffer.current_column = screen.buffer.current_column + 1) == vga::buffer::width {
-        screen.buffer.current_column = 0;
-
-        if (screen.buffer.current_row = screen.buffer.current_row + 1) == vga::buffer::height {
-            screen.buffer.current_row = 0;
-        }
-    }
-}
-
-fn Screen::write_string(screen *Screen, string [*]const u8) {
-    var i usize = 0;
-
-    while i < strlen(string) {
-        Screen::write(screen, string[i], vga::Color::black, vga::Color::white);
-
-        i = i + 1;
-    }
-}
-
-fn kmain() {
-    var screen Screen;
-
-    screen.buffer.characters = vga::buffer::address as [*]Screen::Character;
+    screen.buffer.characters = vga::buffer::address as [*]screen::Screen::Character;
     screen.buffer.current_column = 0;
     screen.buffer.current_row = 0;
 
-    Screen::clear(&screen, vga::Color::black, vga::Color::white);
+    screen::Screen::clear(&screen, vga::Color::black, vga::Color::white);
 
-    Screen::write_string(&screen, "Hello, World!");
+    screen::Screen::write_string(&screen, "Hello, World!");
 
     while true {}
 }
