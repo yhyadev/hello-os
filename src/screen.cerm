@@ -38,16 +38,28 @@ pub fn Screen::clear(screen *Screen, background vga::Color, foreground vga::Colo
 }
 
 pub fn Screen::write(screen *Screen, ascii_character u8, background vga::Color, foreground vga::Color) {
-    var index = screen.buffer.current_row * vga::buffer::width + screen.buffer.current_column;
+    switch (ascii_character) {
+        '\n' => {
+            if (screen.buffer.current_row += 1) == vga::buffer::height {
+                screen.buffer.current_row = 0;
+            }
 
-    screen.buffer.characters[index].ascii_character = ascii_character;
-    screen.buffer.characters[index].backfront_color = (background as u8 << 4) | foreground;
+            screen.buffer.current_column = 0;
+        },
 
-    if (screen.buffer.current_column += 1) == vga::buffer::width {
-        screen.buffer.current_column = 0;
+        else => {
+            var index = screen.buffer.current_row * vga::buffer::width + screen.buffer.current_column;
 
-        if (screen.buffer.current_row += 1) == vga::buffer::height {
-            screen.buffer.current_row = 0;
+            screen.buffer.characters[index].ascii_character = ascii_character;
+            screen.buffer.characters[index].backfront_color = (background as u8 << 4) | foreground;
+
+            if (screen.buffer.current_column += 1) == vga::buffer::width {
+                screen.buffer.current_column = 0;
+
+                if (screen.buffer.current_row += 1) == vga::buffer::height {
+                    screen.buffer.current_row = 0;
+                }
+            }
         }
     }
 }

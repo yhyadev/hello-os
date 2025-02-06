@@ -48,7 +48,11 @@ export fn kmain() {
 
     screen::Screen::clear(&screen, vga::Color::black, vga::Color::white);
 
-    screen::Screen::print(&screen, "Hello, World!");
+    screen::Screen::print(&screen, "Welcome to our EPIC HELLO WORLD CLUB!\n\n");
+
+    screen::Screen::print(&screen, "Hello, World!\n");
+    screen::Screen::print(&screen, "Hello, World!\n");
+    screen::Screen::print(&screen, "Hello, World!\n");
 
     hlt_loop();
 }
