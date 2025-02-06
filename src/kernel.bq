@@ -1,5 +1,5 @@
-import "vga.cerm";
-import "screen.cerm";
+import "vga.bq";
+import "screen.bq";
 
 asm {
     ".set ALIGN,    1<<0             /* align loaded modules on page boundaries */"

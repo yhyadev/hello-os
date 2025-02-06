@@ -1,4 +1,4 @@
-import "vga.cerm";
+import "vga.bq";
 
 pub type Screen = struct {
     buffer Screen::Buffer,
