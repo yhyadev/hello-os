@@ -1,23 +1,21 @@
-module screen;
-
 import "vga.cerm";
 
-type Screen = struct {
+pub type Screen = struct {
     buffer Screen::Buffer,
 };
 
-type Screen::Character = struct {
+pub type Screen::Character = struct {
     ascii_character u8,
     backfront_color u8,
 };
 
-type Screen::Buffer = struct {
+pub type Screen::Buffer = struct {
     characters [*]Screen::Character,
     current_column usize,
     current_row usize,
 };
 
-fn Screen::clear(screen *Screen, background vga::Color, foreground vga::Color) {
+pub fn Screen::clear(screen *Screen, background vga::Color, foreground vga::Color) {
     screen.buffer.current_row = 0;
     screen.buffer.current_column = 0;
 
@@ -27,51 +25,37 @@ fn Screen::clear(screen *Screen, background vga::Color, foreground vga::Color) {
         var column usize = 0;
 
         while column < vga::buffer::width {
-            var index usize = row * vga::buffer::width + column;
+            var index = row * vga::buffer::width + column;
 
             screen.buffer.characters[index].ascii_character = ' ';
             screen.buffer.characters[index].backfront_color = (background as u8 << 4) | foreground;
 
-            column = column + 1;
+            column += 1;
         }
 
-        row = row + 1;
+        row += 1;
     }
 }
 
-fn Screen::write(screen *Screen, ascii_character u8, background vga::Color, foreground vga::Color) {
-    var index usize = screen.buffer.current_row * vga::buffer::width + screen.buffer.current_column;
+pub fn Screen::write(screen *Screen, ascii_character u8, background vga::Color, foreground vga::Color) {
+    var index = screen.buffer.current_row * vga::buffer::width + screen.buffer.current_column;
 
     screen.buffer.characters[index].ascii_character = ascii_character;
     screen.buffer.characters[index].backfront_color = (background as u8 << 4) | foreground;
 
-    if (screen.buffer.current_column = screen.buffer.current_column + 1) == vga::buffer::width {
+    if (screen.buffer.current_column += 1) == vga::buffer::width {
         screen.buffer.current_column = 0;
 
-        if (screen.buffer.current_row = screen.buffer.current_row + 1) == vga::buffer::height {
+        if (screen.buffer.current_row += 1) == vga::buffer::height {
             screen.buffer.current_row = 0;
         }
     }
 }
 
-fn strlen(str [*]const u8) usize {
-    var len usize = 0;
+pub fn Screen::print(screen *Screen, string [*]const u8) {
+    while string.* != 0 {
+        Screen::write(screen, string.*, vga::Color::black, vga::Color::white);
 
-    while str[len] != 0 {
-        len = len + 1;
-    }
-
-    return len;
-}
-
-fn Screen::write_string(screen *Screen, string [*]const u8) {
-    var len = strlen(string);
-
-    var i usize = 0;
-
-    while i < len {
-        Screen::write(screen, string[i], vga::Color::black, vga::Color::white);
-
-        i = i + 1;
+        string += 1;
     }
 }

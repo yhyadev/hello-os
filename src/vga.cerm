@@ -1,10 +1,8 @@
-module vga;
+pub const buffer::address = 0xb8000;
+pub const buffer::width = 25;
+pub const buffer::height = 80;
 
-const buffer::address = 0xb8000;
-const buffer::width = 25;
-const buffer::height = 80;
-
-type Color = enum u4 {
+pub type Color = enum u4 {
     black = 0,
     blue = 1,
     green = 2,

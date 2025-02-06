@@ -1,5 +1,3 @@
-module kernel;
-
 import "vga.cerm";
 import "screen.cerm";
 
@@ -50,7 +48,7 @@ export fn kmain() {
 
     screen::Screen::clear(&screen, vga::Color::black, vga::Color::white);
 
-    screen::Screen::write_string(&screen, "Hello, World!");
+    screen::Screen::print(&screen, "Hello, World!");
 
     hlt_loop();
 }
