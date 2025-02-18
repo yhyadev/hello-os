@@ -1,6 +1,6 @@
-pub const buffer::address = 0xb8000;
-pub const buffer::width = 80;
-pub const buffer::height = 25;
+pub const buffer_address = 0xb8000;
+pub const buffer_width = 80;
+pub const buffer_height = 25;
 
 pub type Color = enum u4 {
     black = 0,

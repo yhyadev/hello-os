@@ -1,5 +1,8 @@
-import "vga.bq";
-import "screen.bq";
+const vga = @import("vga.bq");
+const screen_mod = @import("screen.bq");
+
+type Screen = screen_mod.Screen;
+type ScreenCharacter = screen_mod.ScreenCharacter;
 
 asm {
     ".set ALIGN,    1<<0             /* align loaded modules on page boundaries */"
@@ -40,19 +43,19 @@ export fn hlt_loop() {
 }
 
 export fn kmain() {
-    var screen screen::Screen;
+    var screen Screen;
 
-    screen.buffer.characters = vga::buffer::address as [*]screen::Screen::Character;
+    screen.buffer.characters = vga.buffer_address as [*]ScreenCharacter;
     screen.buffer.current_column = 0;
     screen.buffer.current_row = 0;
 
-    screen::Screen::clear(&screen, vga::Color::black, vga::Color::white);
+    screen_mod.clear(&screen, vga.Color.black, vga.Color.white);
 
-    screen::Screen::print(&screen, "Welcome to our EPIC HELLO WORLD CLUB!\n\n");
+    screen_mod.print(&screen, "Welcome to our EPIC HELLO WORLD CLUB!\n\n");
 
-    screen::Screen::print(&screen, "Hello, World!\n");
-    screen::Screen::print(&screen, "Hello, World!\n");
-    screen::Screen::print(&screen, "Hello, World!\n");
+    screen_mod.print(&screen, "Hello, World!\n");
+    screen_mod.print(&screen, "Hello, World!\n");
+    screen_mod.print(&screen, "Hello, World!\n");
 
     hlt_loop();
 }
