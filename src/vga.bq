@@ -1,8 +1,8 @@
-pub const buffer_address = 0xb8000;
-pub const buffer_width = 80;
-pub const buffer_height = 25;
+buffer_address :: 0xb8000;
+buffer_width :: 80;
+buffer_height :: 25;
 
-pub type Color = enum u4 {
+Color :: enum u4 {
     black = 0,
     blue = 1,
     green = 2,
@@ -19,4 +19,4 @@ pub type Color = enum u4 {
     light_magenta = 13,
     light_brown = 14,
     white = 15,
-};
+}

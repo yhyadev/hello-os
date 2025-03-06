@@ -1,8 +1,41 @@
-const vga = @import("vga.bq");
-const screen_mod = @import("screen.bq");
+vga :: @import("vga.bq");
+Color :: vga.Color;
 
-type Screen = screen_mod.Screen;
-type ScreenCharacter = screen_mod.ScreenCharacter;
+screen_mod :: @import("screen.bq");
+Screen :: screen_mod.Screen;
+ScreenCharacter :: screen_mod.ScreenCharacter;
+clear :: screen_mod.clear;
+print :: screen_mod.print;
+
+hlt_loop :: fn () @foreign("hlt_loop") {
+    asm {
+        "cli"
+    };
+
+    while true {
+        asm {
+            "hlt"
+        };
+    }
+}
+
+kmain :: fn () @foreign("kmain") {
+    screen: Screen;
+
+    screen.buffer.characters = vga.buffer_address as [*]ScreenCharacter;
+    screen.buffer.current_column = 0;
+    screen.buffer.current_row = 0;
+
+    clear(&screen, Color.black, Color.white);
+
+    print(&screen, "Welcome to our EPIC HELLO WORLD CLUB!\n\n");
+
+    print(&screen, "Hello, World!\n");
+    print(&screen, "Hello, World!\n");
+    print(&screen, "Hello, World!\n");
+
+    hlt_loop();
+}
 
 asm {
     ".set ALIGN,    1<<0             /* align loaded modules on page boundaries */"
@@ -34,28 +67,3 @@ asm {
     "    call hlt_loop"
 }
 
-export fn hlt_loop() {
-    asm { "cli" };
-
-    while true {
-        asm { "hlt" };
-    }
-}
-
-export fn kmain() {
-    var screen Screen;
-
-    screen.buffer.characters = vga.buffer_address as [*]ScreenCharacter;
-    screen.buffer.current_column = 0;
-    screen.buffer.current_row = 0;
-
-    screen_mod.clear(&screen, vga.Color.black, vga.Color.white);
-
-    screen_mod.print(&screen, "Welcome to our EPIC HELLO WORLD CLUB!\n\n");
-
-    screen_mod.print(&screen, "Hello, World!\n");
-    screen_mod.print(&screen, "Hello, World!\n");
-    screen_mod.print(&screen, "Hello, World!\n");
-
-    hlt_loop();
-}

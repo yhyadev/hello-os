@@ -1,31 +1,32 @@
-const vga = @import("vga.bq");
+vga :: @import("vga.bq");
+Color :: vga.Color;
 
-pub type Screen = struct {
-    buffer ScreenBuffer,
-};
+Screen :: struct {
+    buffer: ScreenBuffer,
+}
 
-pub type ScreenCharacter = struct {
-    ascii_character u8,
-    backfront_color u8,
-};
+ScreenCharacter :: struct {
+    ascii_character: u8,
+    backfront_color: u8,
+}
 
-pub type ScreenBuffer = struct {
-    characters [*]ScreenCharacter,
-    current_column usize,
-    current_row usize,
-};
+ScreenBuffer :: struct {
+    characters: [*]ScreenCharacter,
+    current_column: usize,
+    current_row: usize,
+}
 
-pub fn clear(screen *Screen, background vga.Color, foreground vga.Color) {
+clear :: fn (screen: *Screen, background: Color, foreground: Color) {
     screen.buffer.current_row = 0;
     screen.buffer.current_column = 0;
 
-    var row usize = 0;
+    row: usize = 0;
 
     while row < vga.buffer_height {
-        var column usize = 0;
+        column: usize = 0;
 
         while column < vga.buffer_width {
-            var index = row * vga.buffer_width + column;
+            index := row * vga.buffer_width + column;
 
             screen.buffer.characters[index].ascii_character = ' ';
             screen.buffer.characters[index].backfront_color = (background as u8 << 4) | foreground;
@@ -37,7 +38,7 @@ pub fn clear(screen *Screen, background vga.Color, foreground vga.Color) {
     }
 }
 
-pub fn write(screen *Screen, ascii_character u8, background vga.Color, foreground vga.Color) {
+write :: fn (screen: *Screen, ascii_character: u8, background: Color, foreground: Color) {
     switch (ascii_character) {
         '\n' => {
             if (screen.buffer.current_row += 1) == vga.buffer_height {
@@ -48,7 +49,7 @@ pub fn write(screen *Screen, ascii_character u8, background vga.Color, foregroun
         },
 
         else => {
-            var index = screen.buffer.current_row * vga.buffer_width + screen.buffer.current_column;
+            index := screen.buffer.current_row * vga.buffer_width + screen.buffer.current_column;
 
             screen.buffer.characters[index].ascii_character = ascii_character;
             screen.buffer.characters[index].backfront_color = (background as u8 << 4) | foreground;
@@ -64,9 +65,9 @@ pub fn write(screen *Screen, ascii_character u8, background vga.Color, foregroun
     }
 }
 
-pub fn print(screen *Screen, string [*]const u8) {
+print :: fn (screen: *Screen, string: [*]const u8) {
     while string.* != 0 {
-        write(screen, string.*, vga.Color.black, vga.Color.white);
+        write(screen, string.*, Color.black, Color.white);
 
         string += 1;
     }
