@@ -10,17 +10,17 @@ print :: screen_mod.print;
 hlt_loop :: fn () @foreign("hlt_loop") {
     asm {
         "cli"
-    };
+    }
 
     while true {
         asm {
             "hlt"
-        };
+        }
     }
 }
 
 kmain :: fn () @foreign("kmain") {
-    screen: Screen;
+    screen : Screen;
 
     screen.buffer.characters = vga.buffer_address as [*]ScreenCharacter;
     screen.buffer.current_column = 0;

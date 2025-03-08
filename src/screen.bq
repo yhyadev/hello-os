@@ -2,28 +2,28 @@ vga :: @import("vga.bq");
 Color :: vga.Color;
 
 Screen :: struct {
-    buffer: ScreenBuffer,
+    buffer : ScreenBuffer,
 }
 
 ScreenCharacter :: struct {
-    ascii_character: u8,
-    backfront_color: u8,
+    ascii_character : u8,
+    backfront_color : u8,
 }
 
 ScreenBuffer :: struct {
-    characters: [*]ScreenCharacter,
-    current_column: usize,
-    current_row: usize,
+    characters : [*]ScreenCharacter,
+    current_column : usize,
+    current_row : usize,
 }
 
-clear :: fn (screen: *Screen, background: Color, foreground: Color) {
+clear :: fn (screen : *Screen, background : Color, foreground : Color) {
     screen.buffer.current_row = 0;
     screen.buffer.current_column = 0;
 
-    row: usize = 0;
+    row : usize = 0;
 
     while row < vga.buffer_height {
-        column: usize = 0;
+        column : usize = 0;
 
         while column < vga.buffer_width {
             index := row * vga.buffer_width + column;
@@ -38,7 +38,7 @@ clear :: fn (screen: *Screen, background: Color, foreground: Color) {
     }
 }
 
-write :: fn (screen: *Screen, ascii_character: u8, background: Color, foreground: Color) {
+write :: fn (screen : *Screen, ascii_character : u8, background : Color, foreground : Color) {
     switch (ascii_character) {
         '\n' => {
             if (screen.buffer.current_row += 1) == vga.buffer_height {
@@ -65,7 +65,7 @@ write :: fn (screen: *Screen, ascii_character: u8, background: Color, foreground
     }
 }
 
-print :: fn (screen: *Screen, string: [*]const u8) {
+print :: fn (screen : *Screen, string : [*]const u8) {
     while string.* != 0 {
         write(screen, string.*, Color.black, Color.white);
 
