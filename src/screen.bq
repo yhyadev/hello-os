@@ -26,7 +26,7 @@ clear :: fn (screen : *Screen, background : Color, foreground : Color) {
         column : usize = 0;
 
         while column < vga.buffer_width {
-            index := row * vga.buffer_width + column;
+            index :: row * vga.buffer_width + column;
 
             screen.buffer.characters[index].ascii_character = ' ';
             screen.buffer.characters[index].backfront_color = (background as u8 << 4) | foreground;
@@ -49,7 +49,7 @@ write :: fn (screen : *Screen, ascii_character : u8, background : Color, foregro
         },
 
         else => {
-            index := screen.buffer.current_row * vga.buffer_width + screen.buffer.current_column;
+            index :: screen.buffer.current_row * vga.buffer_width + screen.buffer.current_column;
 
             screen.buffer.characters[index].ascii_character = ascii_character;
             screen.buffer.characters[index].backfront_color = (background as u8 << 4) | foreground;
@@ -66,9 +66,11 @@ write :: fn (screen : *Screen, ascii_character : u8, background : Color, foregro
 }
 
 print :: fn (screen : *Screen, string : [*]const u8) {
-    while string.* != 0 {
-        write(screen, string.*, Color.black, Color.white);
+    i : usize = 0;
 
-        string += 1;
+    while string[i] != 0 {
+        write(screen, string[i], Color.black, Color.white);
+
+        i += 1;
     }
 }
