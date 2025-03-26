@@ -20,7 +20,7 @@ hlt_loop :: fn () @foreign("hlt_loop") {
 }
 
 kmain :: fn () @foreign("kmain") {
-    screen : Screen;
+    screen := @uninitialized(Screen);
 
     screen.buffer.characters = vga.buffer_address as [*]ScreenCharacter;
     screen.buffer.current_column = 0;
